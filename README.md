@@ -56,7 +56,7 @@ The installer turns a fresh Mac into a practical coding machine:
 
 - Installs Homebrew, the package manager used to install developer tools.
 - Installs Git and GitHub CLI for source control.
-- Installs VS Code, Ghostty, iTerm2, and the JetBrains Mono Nerd Font.
+- Installs VS Code, Ghostty, iTerm2, and the Meslo LG Nerd Font.
 - Installs Node.js, pnpm, Python, mise, and uv for common project work.
 - Installs terminal tools like fzf, ripgrep, zoxide, tmux, eza, bat, and
   git-delta.

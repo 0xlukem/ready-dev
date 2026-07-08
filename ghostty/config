@@ -1,9 +1,33 @@
-font-family = JetBrainsMono Nerd Font
-font-size = 14
-window-padding-x = 12
-window-padding-y = 12
-theme = dark:GitHub-Dark,light:GitHub-Light
+background = 11171d
+foreground = c8d3e5
+cursor-style = block
+cursor-color = ffffff
+selection-background = 263340
+selection-foreground = e6edf3
+
+palette = 0=#11171d
+palette = 1=#ff5f5f
+palette = 2=#8bd49c
+palette = 3=#d7af5f
+palette = 4=#00aaff
+palette = 5=#b48ead
+palette = 6=#5fb3b3
+palette = 7=#c8d3e5
+palette = 8=#4c566a
+palette = 9=#ff6b6b
+palette = 10=#a6e3a1
+palette = 11=#ffd866
+palette = 12=#00bfff
+palette = 13=#c792ea
+palette = 14=#7fdbca
+palette = 15=#ffffff
+
+font-family = MesloLGS NF
+font-size = 12
+
+window-padding-x = 10
+window-padding-y = 10
 macos-titlebar-style = hidden
 confirm-close-surface = false
 copy-on-select = clipboard
-
+shell-integration-features = no-cursor

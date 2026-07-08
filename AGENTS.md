@@ -136,7 +136,7 @@ Use these explanations when users ask "what is this?" or "do I need this?"
 - **iTerm2**: Another popular Mac terminal app. This repo includes an iTerm2
   dynamic profile.
 - **Visual Studio Code**: The main code editor installed by this setup.
-- **JetBrains Mono Nerd Font**: A developer-friendly font with icons used by
+- **Meslo LG Nerd Font**: A developer-friendly font with icons used by
   terminal prompts and themes.
 
 ### Shell Setup

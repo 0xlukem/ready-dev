@@ -27,7 +27,7 @@ brew "uv"
 cask "ghostty"
 cask "iterm2"
 cask "visual-studio-code"
-cask "font-jetbrains-mono-nerd-font"
+cask "font-meslo-lg-nerd-font"
 
 # Optional apps; install manually if wanted.
 # cask "docker"

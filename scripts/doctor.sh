@@ -12,7 +12,7 @@ export YES DRY_RUN
 # shellcheck source=lib.sh
 source "$DOTFILES_DIR/scripts/lib.sh"
 
-TOTAL_STEPS=5
+TOTAL_STEPS=6
 STEP_COUNT=0
 
 usage() {
@@ -96,6 +96,37 @@ check_app() {
   fi
 }
 
+check_font() {
+  local font_name="$1"
+  local cask_name="$2"
+  local description="$3"
+  local font_path
+
+  font_path="$(
+    find "$HOME/Library/Fonts" /Library/Fonts -maxdepth 1 \
+      \( -name "MesloLGS NF Regular.ttf" \
+        -o -name "MesloLGSNerdFont-Regular.ttf" \
+        -o -name "MesloLGSNerdFontMono-Regular.ttf" \) \
+      -print -quit 2>/dev/null
+  )"
+
+  if [[ -n "$font_path" ]]; then
+    success "$font_name found at $font_path"
+    return 0
+  fi
+
+  warn "$font_name missing. $description"
+  missing_count=$((missing_count + 1))
+
+  if [[ "$FIX" == "1" ]] && command_exists brew; then
+    if confirm_described "$font_name" "$description" "Install $font_name with Homebrew Cask now?" "N"; then
+      run brew install --cask "$cask_name"
+    else
+      skip "$font_name installation skipped by choice."
+    fi
+  fi
+}
+
 check_optional_app() {
   local app_name="$1"
   local app_path="$2"
@@ -145,6 +176,9 @@ check_optional_app "Docker Desktop" "/Applications/Docker.app" "Docker Desktop r
 check_app "Ghostty" "/Applications/Ghostty.app" "ghostty" "Ghostty is the GPU-native terminal configured by this repo."
 check_app "iTerm2" "/Applications/iTerm.app" "iterm2" "iTerm2 is an alternate terminal with a dynamic profile from this repo."
 check_app "Visual Studio Code" "/Applications/Visual Studio Code.app" "visual-studio-code" "VS Code is the editor configured by this repo."
+
+step "Terminal font"
+check_font "Meslo LG Nerd Font" "font-meslo-lg-nerd-font" "Required for Powerlevel10k icons in Ghostty and iTerm2."
 
 step "Repo symlinks"
 check_symlink "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc"
