@@ -12,6 +12,9 @@ export YES DRY_RUN
 # shellcheck source=lib.sh
 source "$DOTFILES_DIR/scripts/lib.sh"
 
+TOTAL_STEPS=5
+STEP_COUNT=0
+
 usage() {
   cat <<'EOF'
 Usage: ./scripts/doctor.sh [--fix] [--yes] [--dry-run]
@@ -62,8 +65,10 @@ check_command() {
   missing_count=$((missing_count + 1))
 
   if [[ "$FIX" == "1" && "$package_name" != "-" ]] && command_exists brew; then
-    if confirm_described "$package_name" "$description" "Install $package_name with Homebrew now? [y/N]" "N"; then
+    if confirm_described "$package_name" "$description" "Install $package_name with Homebrew now?" "N"; then
       run brew install "$package_name"
+    else
+      skip "$package_name installation skipped by choice."
     fi
   fi
 }
@@ -83,8 +88,10 @@ check_app() {
   missing_count=$((missing_count + 1))
 
   if [[ "$FIX" == "1" ]] && command_exists brew; then
-    if confirm_described "$app_name" "$description" "Install $app_name with Homebrew Cask now? [y/N]" "N"; then
+    if confirm_described "$app_name" "$description" "Install $app_name with Homebrew Cask now?" "N"; then
       run brew install --cask "$cask_name"
+    else
+      skip "$app_name installation skipped by choice."
     fi
   fi
 }
@@ -145,12 +152,16 @@ check_symlink "$DOTFILES_DIR/git/.gitconfig" "$HOME/.gitconfig"
 check_symlink "$DOTFILES_DIR/ghostty/config" "$HOME/.config/ghostty/config"
 
 if [[ "$FIX" == "1" ]]; then
-  if confirm_described "Dotfile symlinks" "Recreates missing repo symlinks with backups for existing files." "Run setup-symlinks now? [y/N]" "N"; then
+  if confirm_described "Dotfile symlinks" "Recreates missing repo-owned symlinks and backs up any existing files before replacing them." "Run setup-symlinks now?" "N"; then
     "$DOTFILES_DIR/scripts/setup-symlinks.sh"
+  else
+    skip "Dotfile symlink repair skipped by choice."
   fi
 
-  if confirm_described "Oh My Zsh plugins" "Installs missing shell plugins and Powerlevel10k into Oh My Zsh custom directories." "Run install-zsh-plugins now? [y/N]" "N"; then
+  if confirm_described "Oh My Zsh plugins" "Installs missing shell plugins and Powerlevel10k into the Oh My Zsh custom directories used by this repo." "Run install-zsh-plugins now?" "N"; then
     "$DOTFILES_DIR/scripts/install-zsh-plugins.sh"
+  else
+    skip "Oh My Zsh plugin repair skipped by choice."
   fi
 fi
 

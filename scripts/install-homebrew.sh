@@ -13,9 +13,8 @@ if command_exists brew; then
   exit 0
 fi
 
-if ! confirm_described "Homebrew" "Package manager for installing macOS developer tools and desktop apps." "Homebrew is missing. Install it now? [Y/n]" "Y"; then
-  warn "Skipped Homebrew installation."
-  record_summary skipped "Homebrew installation"
+if ! confirm_described "Homebrew" "Installs the Mac package manager this setup uses for developer tools and apps. Homebrew may ask for your Mac password because it creates system folders under /opt/homebrew." "Homebrew is missing. Install it now?" "Y"; then
+  skip "Homebrew installation skipped by choice."
   exit 0
 fi
 

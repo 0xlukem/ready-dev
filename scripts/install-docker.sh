@@ -14,14 +14,12 @@ if [[ -d "/Applications/Docker.app" ]]; then
 fi
 
 if ! command_exists brew; then
-  warn "Homebrew is required to install Docker Desktop automatically."
-  record_summary skipped "Docker Desktop installation because Homebrew is unavailable"
+  skip_unavailable "Docker Desktop installation skipped because Homebrew is unavailable."
   exit 0
 fi
 
-if ! confirm_manual_described "Docker Desktop" "Optional app for running containers locally; it may ask for macOS permissions or sign-in after opening." "Install Docker Desktop now? [y/N]" "N"; then
-  warn "Skipped Docker Desktop installation."
-  record_summary skipped "Docker Desktop"
+if ! confirm_manual_described "Docker Desktop" "Optional app for projects that need containers, databases, or local services. It may ask for macOS permissions or sign-in after you open it." "Install Docker Desktop now?" "N"; then
+  skip "Docker Desktop installation skipped by choice."
   exit 0
 fi
 
@@ -36,5 +34,4 @@ if brew install --cask docker; then
   record_summary installed "Docker Desktop"
 else
   warn "Could not install Docker Desktop with Homebrew Cask 'docker'."
-  record_summary skipped "Docker Desktop installation failed"
 fi

@@ -8,14 +8,12 @@ export DOTFILES_DIR
 source "$DOTFILES_DIR/scripts/lib.sh"
 
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-  warn "Oh My Zsh is not installed; skipping custom plugins."
-  record_summary skipped "Oh My Zsh plugins because Oh My Zsh is unavailable"
+  skip_unavailable "Oh My Zsh plugins skipped because Oh My Zsh is unavailable."
   exit 0
 fi
 
 if ! command_exists git; then
-  warn "git is required to install Oh My Zsh plugins."
-  record_summary skipped "Oh My Zsh plugins because git is unavailable"
+  skip_unavailable "Oh My Zsh plugins skipped because git is unavailable."
   exit 0
 fi
 

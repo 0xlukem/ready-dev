@@ -13,7 +13,7 @@ usage() {
 Usage: ./install.sh [--yes] [--dry-run]
 
 Options:
-  --yes      Auto-confirm safe setup steps.
+  --yes      Auto-confirm safe setup prompts; manual optional prompts still ask.
   --dry-run  Print planned actions without changing the system.
   --help     Show this help.
 EOF
@@ -42,6 +42,9 @@ done
 
 # shellcheck source=scripts/lib.sh
 source "$DOTFILES_DIR/scripts/lib.sh"
+
+TOTAL_STEPS=12
+STEP_COUNT=0
 
 DOTFILES_SUMMARY_FILE="$(mktemp "${TMPDIR:-/tmp}/dotfiles-install-summary.XXXXXX")"
 export DOTFILES_SUMMARY_FILE
@@ -72,18 +75,16 @@ step "Homebrew"
 "$DOTFILES_DIR/scripts/install-homebrew.sh"
 
 if command_exists brew; then
-  if confirm_described "Homebrew bundle" "Installs command line tools, desktop apps, fonts, and developer utilities from Brewfile." "Run brew bundle from Brewfile now? [Y/n]" "Y"; then
+  if confirm_described "Homebrew bundle" "Installs the shared tool list from Brewfile: command-line tools, desktop apps, and the coding font. This is the main setup step after Homebrew exists." "Run brew bundle from Brewfile now?" "Y"; then
     run brew bundle --file="$DOTFILES_DIR/Brewfile"
     if [[ "$DRY_RUN" == "0" ]]; then
       record_summary installed "Homebrew bundle from Brewfile"
     fi
   else
-    warn "Skipped brew bundle."
-    record_summary skipped "Homebrew bundle"
+    skip "Homebrew bundle skipped by choice."
   fi
 else
-  warn "Homebrew is not available; skipping brew bundle."
-  record_summary skipped "Homebrew bundle because Homebrew is unavailable"
+  skip_unavailable "Homebrew bundle skipped because Homebrew is unavailable."
 fi
 
 step "Oh My Zsh"
@@ -93,11 +94,10 @@ step "Oh My Zsh plugins and Powerlevel10k"
 "$DOTFILES_DIR/scripts/install-zsh-plugins.sh"
 
 step "Dotfile symlinks"
-if confirm_described "Dotfile symlinks" "Creates backups for existing files, then links this repo's shell, Git, terminal, and VS Code config." "Create or update dotfile symlinks now? [Y/n]" "Y"; then
+if confirm_described "Dotfile symlinks" "Backs up existing config files, then points your shell, Git, Ghostty, iTerm2, VS Code, and ~/.dotfiles paths at this repo. Skip this if you only want tools installed and no config changes." "Create or update dotfile symlinks now?" "Y"; then
   "$DOTFILES_DIR/scripts/setup-symlinks.sh"
 else
-  warn "Skipped dotfile symlinks."
-  record_summary skipped "Dotfile symlinks"
+  skip "Dotfile symlinks skipped by choice."
 fi
 
 step "Git identity"
@@ -110,22 +110,20 @@ step "GitHub CLI auth"
 "$DOTFILES_DIR/scripts/setup-gh.sh"
 
 step "macOS defaults"
-if confirm_described "macOS Finder defaults" "Shows hidden files/path/status bars and avoids .DS_Store files on network drives." "Apply optional macOS Finder defaults now? [y/N]" "N"; then
+if confirm_manual_described "macOS Finder defaults" "Optional Finder preferences: show hidden files, path bar, and status bar, and avoid .DS_Store files on network drives. Skip this if you prefer to keep Finder exactly as it is." "Apply optional macOS Finder defaults now?" "N"; then
   "$DOTFILES_DIR/scripts/setup-macos-defaults.sh"
 else
-  warn "Skipped macOS defaults."
-  record_summary skipped "macOS defaults"
+  skip "macOS Finder defaults skipped by choice."
 fi
 
 step "Docker Desktop"
 "$DOTFILES_DIR/scripts/install-docker.sh"
 
 step "OpenAI desktop tools"
-if confirm_manual_described "OpenAI desktop tools" "Optionally checks for ChatGPT and Codex, then asks before installing anything missing." "Check and offer ChatGPT/Codex installation now? [y/N]" "N"; then
+if confirm_manual_described "OpenAI desktop tools" "Optional check for ChatGPT and Codex desktop tools. If anything is missing, the installer asks again before installing it. No OpenAI credentials are handled here." "Check and offer ChatGPT/Codex installation now?" "N"; then
   "$DOTFILES_DIR/scripts/install-openai-tools.sh"
 else
-  warn "Skipped OpenAI desktop tools."
-  record_summary skipped "OpenAI desktop tools"
+  skip "OpenAI desktop tools skipped by choice."
 fi
 
 print_install_summary

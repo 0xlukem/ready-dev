@@ -8,8 +8,7 @@ export DOTFILES_DIR
 source "$DOTFILES_DIR/scripts/lib.sh"
 
 if ! command_exists gh; then
-  warn "GitHub CLI is not installed. It should be installed by Brewfile."
-  record_summary skipped "GitHub CLI auth because gh is unavailable"
+  skip_unavailable "GitHub CLI authentication skipped because gh is unavailable."
   exit 0
 fi
 
@@ -19,9 +18,8 @@ if gh auth status >/dev/null 2>&1; then
   exit 0
 fi
 
-if ! confirm_manual_described "GitHub CLI auth" "Starts an interactive GitHub login; credentials are stored by gh, never in this repo." "Run GitHub CLI authentication now? [y/N]" "N"; then
-  warn "Skipped GitHub CLI authentication."
-  record_summary skipped "GitHub CLI authentication"
+if ! confirm_manual_described "GitHub CLI auth" "Starts the official interactive GitHub login flow. Credentials are stored by GitHub CLI, never by this repo." "Run GitHub CLI authentication now?" "N"; then
+  skip "GitHub CLI authentication skipped by choice."
   exit 0
 fi
 
@@ -34,10 +32,9 @@ fi
 gh auth login
 record_summary installed "GitHub CLI authentication"
 
-if confirm_manual_described "Git credential helper" "Lets Git use your authenticated gh session for GitHub HTTPS operations." "Configure gh as Git credential helper? [y/N]" "N"; then
+if confirm_manual_described "Git credential helper" "Lets Git reuse your authenticated gh session for GitHub HTTPS clone, pull, and push operations." "Configure gh as Git credential helper?" "N"; then
   gh auth setup-git
   record_summary installed "GitHub CLI Git credential helper"
 else
-  warn "Skipped gh auth setup-git."
-  record_summary skipped "GitHub CLI Git credential helper"
+  skip "GitHub CLI Git credential helper skipped by choice."
 fi

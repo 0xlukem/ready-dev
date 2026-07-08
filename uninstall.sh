@@ -38,6 +38,9 @@ done
 # shellcheck source=scripts/lib.sh
 source "$DOTFILES_DIR/scripts/lib.sh"
 
+TOTAL_STEPS=1
+STEP_COUNT=0
+
 ensure_macos
 step "Removing repo-owned symlinks"
 

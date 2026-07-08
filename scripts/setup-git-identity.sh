@@ -24,14 +24,12 @@ if [[ "${DRY_RUN:-0}" == "1" ]]; then
 fi
 
 if [[ ! -t 0 ]]; then
-  warn "Skipped Git identity setup because input is non-interactive."
-  record_summary skipped "Git identity setup because input is non-interactive"
+  skip_unavailable "Git identity setup skipped because input is non-interactive."
   exit 0
 fi
 
-if ! confirm_manual_described "Git identity" "Git uses this name and email in commits. It is written to ~/.gitconfig.local, not this repo." "Configure Git identity now? [Y/n]" "Y"; then
-  warn "Skipped Git identity setup."
-  record_summary skipped "Git identity setup"
+if ! confirm_manual_described "Git identity" "Git uses this name and email on commits you create. The values are written to ~/.gitconfig.local with private file permissions, not committed to this repo." "Configure Git identity now?" "Y"; then
+  skip "Git identity setup skipped by choice."
   exit 0
 fi
 

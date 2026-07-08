@@ -12,7 +12,8 @@ This one-click installer was created to help first-time developers,
 vibecoders, and curious builders set up a coding workspace without getting
 stuck in hours of YouTube tutorials. It installs the common tools, configures
 the terminal and editor, asks before optional steps, and prints a final report
-of what was installed, linked, skipped, or backed up.
+of what was installed, linked, skipped by choice, skipped because unavailable,
+or backed up.
 
 If you need help, read this README all the way through first. It is written to
 be easy to follow. If you still feel lost, ask your LLM of choice to read
@@ -68,7 +69,14 @@ The installer turns a fresh Mac into a practical coding machine:
 
 ## What It Will Ask
 
-The script does not silently make every decision. These are the main prompts:
+The script does not silently make every decision. Prompts use this format:
+
+```text
+Question? [Y/N] default: Y
+```
+
+If you press **Enter** without typing `Y` or `N`, the default answer is used.
+These are the main prompts:
 
 | Prompt | Recommended answer | Why |
 | --- | --- | --- |
@@ -86,8 +94,11 @@ You can auto-confirm the normal setup steps with:
 ./install.sh --yes
 ```
 
-`--yes` still does not silently answer personal or heavier optional prompts such
-as Git identity, GitHub login, Docker Desktop, or OpenAI desktop tools.
+`--yes` is mainly for repeat installs or users who already reviewed the dry run.
+It answers `Y` for safe setup prompts such as Homebrew, the Brewfile install,
+Oh My Zsh, and dotfile symlinks. It still does not silently answer personal or
+heavier optional prompts such as Git identity, GitHub login, Finder defaults,
+Docker Desktop, or OpenAI desktop tools.
 
 ## Safety
 

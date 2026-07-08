@@ -1,15 +1,49 @@
 #!/usr/bin/env bash
 
+if [[ -z "${NO_COLOR:-}" && "${TERM:-}" != "dumb" && -t 1 ]]; then
+  bold="$(printf '\033[1m')"
+  dim="$(printf '\033[2m')"
+  reset="$(printf '\033[0m')"
+  red="$(printf '\033[31m')"
+  green="$(printf '\033[32m')"
+  yellow="$(printf '\033[33m')"
+  blue="$(printf '\033[34m')"
+  cyan="$(printf '\033[36m')"
+else
+  bold=""
+  dim=""
+  reset=""
+  red=""
+  green=""
+  yellow=""
+  blue=""
+  cyan=""
+fi
+
 info() {
   printf '  %s\n' "$*"
 }
 
+notice() {
+  printf '%s\n' "${blue}INFO:${reset} $*"
+}
+
 success() {
-  printf 'OK: %s\n' "$*"
+  printf '%s\n' "${green}OK:${reset} $*"
+}
+
+skip() {
+  printf '%s\n' "${dim}SKIP:${reset} $*"
+  record_summary skipped_by_choice "$*"
+}
+
+skip_unavailable() {
+  printf '%s\n' "${yellow}SKIP:${reset} $*"
+  record_summary skipped_unavailable "$*"
 }
 
 warn() {
-  printf 'WARN: %s\n' "$*" >&2
+  printf '%s\n' "${yellow}WARN:${reset} $*" >&2
   record_summary warnings "$*"
 }
 
@@ -36,7 +70,7 @@ summarize_category() {
     return 0
   fi
 
-  printf '\n%s (%s)\n' "$title" "$count"
+  printf '\n%s%s (%s)%s\n' "$bold" "$title" "$count" "$reset"
   awk -F '\t' -v cat="$category" '$1 == cat { print "- " $2 }' "$DOTFILES_SUMMARY_FILE"
 }
 
@@ -50,9 +84,11 @@ print_install_summary() {
   summarize_category installed "Installed or updated"
   summarize_category linked "Linked"
   summarize_category backups "Backed up"
-  summarize_category skipped "Skipped"
+  summarize_category skipped "Already installed or unchanged"
+  summarize_category skipped_by_choice "Skipped by choice"
+  summarize_category skipped_unavailable "Skipped because unavailable"
   summarize_category warnings "Warnings"
-  summarize_category dry_run "Planned in dry-run"
+  summarize_category dry_run "Planned changes"
 
   if [[ -z "${DOTFILES_SUMMARY_FILE:-}" || ! -s "$DOTFILES_SUMMARY_FILE" ]]; then
     info "No actions were recorded."
@@ -60,13 +96,18 @@ print_install_summary() {
 }
 
 die() {
-  printf 'ERROR: %s\n' "$*" >&2
+  printf '%s\n' "${red}ERROR:${reset} $*" >&2
   record_summary warnings "$*"
   exit 1
 }
 
 step() {
-  printf '\n==> %s\n' "$*"
+  if [[ -n "${TOTAL_STEPS:-}" ]]; then
+    STEP_COUNT=$(( ${STEP_COUNT:-0} + 1 ))
+    printf '\n%sStep %s/%s: %s%s\n' "$bold$blue" "$STEP_COUNT" "$TOTAL_STEPS" "$*" "$reset"
+  else
+    printf '\n%s==> %s%s\n' "$bold$blue" "$*" "$reset"
+  fi
 }
 
 command_exists() {
@@ -87,7 +128,7 @@ run() {
   if [[ "${DRY_RUN:-0}" == "1" ]]; then
     local dry_run_command
     printf -v dry_run_command '%q' "$1"
-    printf '[dry-run] %q' "$1"
+    printf '%s[dry-run]%s %q' "$cyan" "$reset" "$1"
     shift
     local arg
     for arg in "$@"; do
@@ -102,45 +143,104 @@ run() {
   "$@"
 }
 
+default_answer() {
+  local default="${1:-N}"
+
+  if [[ "$default" =~ ^[Yy]$ ]]; then
+    printf 'Y'
+  else
+    printf 'N'
+  fi
+}
+
+confirm_prompt() {
+  local prompt="$1"
+  local default
+
+  default="$(default_answer "${2:-N}")"
+  printf '%s [Y/N] default: %s' "$prompt" "$default"
+}
+
+answer_is_yes() {
+  [[ "$1" =~ ^([Yy]|[Yy][Ee][Ss])$ ]]
+}
+
+answer_is_no() {
+  [[ "$1" =~ ^([Nn]|[Nn][Oo])$ ]]
+}
+
 confirm() {
   local prompt="$1"
   local default="${2:-N}"
   local answer
+  local default_normalized
+  local prompt_with_default
+
+  default_normalized="$(default_answer "$default")"
+  prompt_with_default="$(confirm_prompt "$prompt" "$default_normalized")"
 
   if [[ "${YES:-0}" == "1" ]]; then
-    info "$prompt yes (--yes)"
+    info "$prompt_with_default"
+    notice "Using YES because --yes was passed."
     return 0
   fi
 
   if [[ ! -t 0 ]]; then
-    info "$prompt ${default} (non-interactive)"
-    [[ "$default" =~ ^[Yy]$ ]]
+    info "$prompt_with_default"
+    notice "Using default answer: $default_normalized (non-interactive)."
+    [[ "$default_normalized" == "Y" ]]
     return
   fi
 
-  read -r -p "$prompt " answer
-  if [[ -z "$answer" ]]; then
-    answer="$default"
-  fi
-  [[ "$answer" =~ ^[Yy]$ ]]
+  while true; do
+    read -r -p "$prompt_with_default " answer
+    if [[ -z "$answer" ]]; then
+      answer="$default_normalized"
+    fi
+
+    if answer_is_yes "$answer"; then
+      return 0
+    fi
+    if answer_is_no "$answer"; then
+      return 1
+    fi
+
+    warn "Please answer Y or N."
+  done
 }
 
 confirm_manual() {
   local prompt="$1"
   local default="${2:-N}"
   local answer
+  local default_normalized
+  local prompt_with_default
+
+  default_normalized="$(default_answer "$default")"
+  prompt_with_default="$(confirm_prompt "$prompt" "$default_normalized")"
 
   if [[ ! -t 0 ]]; then
-    info "$prompt ${default} (non-interactive)"
-    [[ "$default" =~ ^[Yy]$ ]]
+    info "$prompt_with_default"
+    notice "Using default answer: $default_normalized (non-interactive)."
+    [[ "$default_normalized" == "Y" ]]
     return
   fi
 
-  read -r -p "$prompt " answer
-  if [[ -z "$answer" ]]; then
-    answer="$default"
-  fi
-  [[ "$answer" =~ ^[Yy]$ ]]
+  while true; do
+    read -r -p "$prompt_with_default " answer
+    if [[ -z "$answer" ]]; then
+      answer="$default_normalized"
+    fi
+
+    if answer_is_yes "$answer"; then
+      return 0
+    fi
+    if answer_is_no "$answer"; then
+      return 1
+    fi
+
+    warn "Please answer Y or N."
+  done
 }
 
 confirm_described() {
@@ -149,7 +249,8 @@ confirm_described() {
   local prompt="$3"
   local default="${4:-N}"
 
-  info "$title: $description"
+  printf '  %s%s%s\n' "$bold" "$title" "$reset"
+  info "$description"
   confirm "$prompt" "$default"
 }
 
@@ -159,7 +260,8 @@ confirm_manual_described() {
   local prompt="$3"
   local default="${4:-N}"
 
-  info "$title: $description"
+  printf '  %s%s%s\n' "$bold" "$title" "$reset"
+  info "$description"
   confirm_manual "$prompt" "$default"
 }
 
@@ -201,7 +303,7 @@ link_file() {
   if [[ -e "$target" || -L "$target" ]]; then
     backup="$(backup_target "$target")"
     mv "$target" "$backup"
-    warn "Backed up $target to $backup"
+    notice "Backed up $target to $backup"
     record_summary backups "$target -> $backup"
   fi
   ln -s "$source" "$target"

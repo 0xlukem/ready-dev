@@ -10,14 +10,12 @@ source "$DOTFILES_DIR/scripts/lib.sh"
 extensions_file="$DOTFILES_DIR/vscode/extensions.txt"
 
 if ! command_exists code; then
-  warn "VS Code 'code' command not found. Install VS Code, then run this script again."
-  record_summary skipped "VS Code extensions because the code command is unavailable"
+  skip_unavailable "VS Code extensions skipped because the code command is unavailable. Open VS Code once, then run this script again."
   exit 0
 fi
 
 if [[ ! -f "$extensions_file" ]]; then
   warn "Missing $extensions_file"
-  record_summary skipped "VS Code extensions because extensions.txt is missing"
   exit 0
 fi
 
@@ -37,6 +35,5 @@ while IFS= read -r extension || [[ -n "$extension" ]]; do
     record_summary installed "VS Code extension $extension"
   else
     warn "Failed to install VS Code extension: $extension"
-    record_summary skipped "VS Code extension $extension failed"
   fi
 done < "$extensions_file"

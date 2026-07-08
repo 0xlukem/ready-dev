@@ -21,14 +21,12 @@ install_cask_if_missing() {
   fi
 
   if ! command_exists brew; then
-    warn "Homebrew is required to install $app_name automatically."
-    record_summary skipped "$app_name installation because Homebrew is unavailable"
+    skip_unavailable "$app_name installation skipped because Homebrew is unavailable."
     return 0
   fi
 
-  if ! confirm_described "$app_name" "$description" "$prompt [y/N]" "N"; then
-    warn "Skipped $app_name installation."
-    record_summary skipped "$app_name installation"
+  if ! confirm_described "$app_name" "$description" "$prompt" "N"; then
+    skip "$app_name installation skipped by choice."
     return 0
   fi
 
@@ -43,7 +41,6 @@ install_cask_if_missing() {
     record_summary installed "$app_name"
   else
     warn "Could not install $app_name with Homebrew Cask '$cask_name'."
-    record_summary skipped "$app_name installation failed"
   fi
 }
 
@@ -51,8 +48,8 @@ install_cask_if_missing \
   "ChatGPT" \
   "/Applications/ChatGPT.app" \
   "chatgpt" \
-  "Install ChatGPT desktop app with Homebrew Cask?" \
-  "Official OpenAI desktop app; sign in later interactively, no credentials are written by this repo."
+  "Install ChatGPT desktop app with Homebrew Cask now?" \
+  "Optional OpenAI desktop app. Installation uses Homebrew Cask; sign-in happens later inside the app and this repo never writes credentials."
 
 if command_exists codex; then
   success "Codex CLI already installed at $(command -v codex)."
@@ -62,9 +59,8 @@ else
     "Codex" \
     "/Applications/Codex.app" \
     "codex" \
-    "Install Codex with Homebrew Cask?" \
-    "OpenAI coding agent CLI/app; sign in later interactively, no credentials are written by this repo."
+    "Install Codex with Homebrew Cask now?" \
+    "Optional OpenAI coding agent CLI/app. Installation uses Homebrew Cask; sign-in happens later inside Codex and this repo never writes credentials."
 fi
 
 info "No OpenAI credentials were written. Sign in interactively from ChatGPT or Codex when you first open them."
-record_summary skipped "OpenAI credentials; sign in later interactively"

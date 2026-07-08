@@ -14,14 +14,12 @@ if [[ -d "$HOME/.oh-my-zsh" ]]; then
 fi
 
 if ! command_exists curl; then
-  warn "curl is required to install Oh My Zsh."
-  record_summary skipped "Oh My Zsh installation because curl is unavailable"
+  skip_unavailable "Oh My Zsh installation skipped because curl is unavailable."
   exit 0
 fi
 
-if ! confirm_described "Oh My Zsh" "Zsh framework that provides plugins, themes, completions, and shell defaults." "Oh My Zsh is missing. Install it unattended now? [Y/n]" "Y"; then
-  warn "Skipped Oh My Zsh installation."
-  record_summary skipped "Oh My Zsh installation"
+if ! confirm_described "Oh My Zsh" "Installs the Zsh framework used by this repo's shell setup. The installer runs unattended and does not change your default shell." "Oh My Zsh is missing. Install it now?" "Y"; then
+  skip "Oh My Zsh installation skipped by choice."
   exit 0
 fi
 
