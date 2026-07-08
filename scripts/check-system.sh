@@ -23,6 +23,5 @@ done
 if command_exists brew; then
   success "Homebrew found at $(command -v brew)"
 else
-  warn "Homebrew not found."
+  notice "Homebrew is not available yet; the installer can add it in the next step."
 fi
-

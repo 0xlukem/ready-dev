@@ -28,6 +28,13 @@ notice() {
   printf '%s\n' "${blue}INFO:${reset} $*"
 }
 
+phase() {
+  local marker="$1"
+  local message="$2"
+
+  printf '\n%s[%s]%s %s\n' "$cyan" "$marker" "$reset" "$message"
+}
+
 success() {
   printf '%s\n' "${green}OK:${reset} $*"
 }
@@ -112,6 +119,88 @@ step() {
 
 command_exists() {
   command -v "$1" >/dev/null 2>&1
+}
+
+load_homebrew_environment() {
+  local brew_path
+  local shellenv
+
+  if command_exists brew; then
+    return 0
+  fi
+
+  for brew_path in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    if [[ ! -x "$brew_path" ]]; then
+      continue
+    fi
+
+    if shellenv="$("$brew_path" shellenv 2>/dev/null)"; then
+      eval "$shellenv"
+      if command_exists brew; then
+        return 0
+      fi
+    fi
+  done
+
+  return 1
+}
+
+summarize_brewfile() {
+  local brewfile="$1"
+  local counts
+  local formulae
+  local apps
+  local fonts
+  local formulae_label
+  local apps_label
+  local fonts_label
+
+  if [[ ! -f "$brewfile" ]]; then
+    warn "Missing Brewfile: $brewfile"
+    return 1
+  fi
+
+  counts="$(awk '
+    /^[[:space:]]*#/ || /^[[:space:]]*$/ { next }
+    {
+      line = $0
+      sub(/^[[:space:]]+/, "", line)
+
+      if (line ~ /^brew[[:space:]]*"/) {
+        formulae++
+      } else if (line ~ /^cask[[:space:]]*"/) {
+        item = line
+        sub(/^cask[[:space:]]*"/, "", item)
+        sub(/".*/, "", item)
+
+        if (item ~ /^font-/) {
+          fonts++
+        } else {
+          apps++
+        }
+      }
+    }
+    END {
+      printf "%d %d %d\n", formulae + 0, apps + 0, fonts + 0
+    }
+  ' "$brewfile")"
+
+  read -r formulae apps fonts <<< "$counts"
+  formulae_label="command-line tools"
+  apps_label="desktop apps"
+  fonts_label="font packages"
+
+  if [[ "$formulae" == "1" ]]; then
+    formulae_label="command-line tool"
+  fi
+  if [[ "$apps" == "1" ]]; then
+    apps_label="desktop app"
+  fi
+  if [[ "$fonts" == "1" ]]; then
+    fonts_label="font package"
+  fi
+
+  info "Found $formulae $formulae_label, $apps $apps_label, and $fonts $fonts_label."
 }
 
 ensure_macos() {

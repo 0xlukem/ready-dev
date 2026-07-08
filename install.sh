@@ -67,19 +67,31 @@ trap cleanup_summary EXIT
 trap on_install_error ERR
 
 ensure_macos
+load_homebrew_environment || true
 
 step "System check"
 "$DOTFILES_DIR/scripts/check-system.sh"
 
 step "Homebrew"
 "$DOTFILES_DIR/scripts/install-homebrew.sh"
+load_homebrew_environment || true
 
 if command_exists brew; then
   if confirm_described "Homebrew bundle" "Installs the shared tool list from Brewfile: command-line tools, desktop apps, and the coding font. This is the main setup step after Homebrew exists." "Run brew bundle from Brewfile now?" "Y"; then
+    phase "1/3" "Preparing Homebrew bundle"
+    summarize_brewfile "$DOTFILES_DIR/Brewfile"
+
+    phase "2/3" "Installing tools, apps, and fonts"
+    info "This can take several minutes on a clean Mac."
+    info "Homebrew may look quiet while fetching metadata or downloading apps."
+    info "Keep this Terminal window open."
     run brew bundle --file="$DOTFILES_DIR/Brewfile"
+
+    phase "3/3" "Recording Homebrew bundle result"
     if [[ "$DRY_RUN" == "0" ]]; then
       record_summary installed "Homebrew bundle from Brewfile"
     fi
+    success "Homebrew bundle finished."
   else
     skip "Homebrew bundle skipped by choice."
   fi
