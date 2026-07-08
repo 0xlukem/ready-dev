@@ -51,14 +51,13 @@ Guide beginners through this order:
 Commands:
 
 ```sh
-git clone <this-repo-url> ~/.dotfiles
-cd ~/.dotfiles
+git clone https://github.com/0xlukem/ready-dev.git ~/ready-dev
+cd ~/ready-dev
 ./install.sh --dry-run
 ./install.sh
 ./scripts/doctor.sh
 ```
 
-Explain that `<this-repo-url>` is the GitHub URL copied from **Code > HTTPS**.
 If macOS asks to install Command Line Tools after `git`, tell the user to accept
 it, wait for it to finish, and retry the command.
 

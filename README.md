@@ -28,12 +28,9 @@ installer would do without changing your Mac.
 2. Clone this repo:
 
    ```sh
-   git clone <this-repo-url> ~/.dotfiles
-   cd ~/.dotfiles
+   git clone https://github.com/0xlukem/ready-dev.git ~/ready-dev
+   cd ~/ready-dev
    ```
-
-   Replace `<this-repo-url>` with the GitHub URL for this repository. On
-   GitHub, use **Code > HTTPS** to copy it.
 
 3. Preview the setup:
 
