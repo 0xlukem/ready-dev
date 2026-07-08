@@ -44,8 +44,10 @@ installer would do without changing your Mac.
    ./install.sh
    ```
 
-If macOS asks to install **Command Line Tools** when you run `git`, accept it,
-wait for it to finish, and then run the command again.
+If this is the first time you run `git clone` on this Mac, macOS may ask you to
+install **Xcode Command Line Tools**. Accept that prompt, wait for it to finish,
+and then run the `git clone` command again. After that one-time install, `git`
+will work normally.
 
 ## What This Does
 
@@ -159,10 +161,10 @@ script can create this local-only file:
 
 ## Troubleshooting
 
-**`git` asks to install Command Line Tools**
+**`git clone` asks to install Command Line Tools**
 
-Accept the macOS prompt, wait for the install to finish, and run the command
-again.
+Accept the macOS prompt, wait for Command Line Tools to finish installing, and
+then run `git clone` again. This usually happens only once on a clean Mac.
 
 **Homebrew asks for your password**
 

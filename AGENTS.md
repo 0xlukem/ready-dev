@@ -58,8 +58,11 @@ cd ~/ready-dev
 ./scripts/doctor.sh
 ```
 
-If macOS asks to install Command Line Tools after `git`, tell the user to accept
-it, wait for it to finish, and retry the command.
+If this is the first time the user runs `git clone` on a clean Mac, macOS may
+ask them to install Xcode Command Line Tools. Explain that this is normal: they
+should accept the prompt, wait for it to finish, and then run the same
+`git clone` command again. After that one-time install, `git` should work
+normally.
 
 ## What The Installer Does
 
