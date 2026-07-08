@@ -104,9 +104,7 @@ check_font() {
 
   font_path="$(
     find "$HOME/Library/Fonts" /Library/Fonts -maxdepth 1 \
-      \( -name "MesloLGS NF Regular.ttf" \
-        -o -name "MesloLGSNerdFont-Regular.ttf" \
-        -o -name "MesloLGSNerdFontMono-Regular.ttf" \) \
+      -name "MesloLGS NF Regular.ttf" \
       -print -quit 2>/dev/null
   )"
 
@@ -178,7 +176,7 @@ check_app "iTerm2" "/Applications/iTerm.app" "iterm2" "iTerm2 is an alternate te
 check_app "Visual Studio Code" "/Applications/Visual Studio Code.app" "visual-studio-code" "VS Code is the editor configured by this repo."
 
 step "Terminal font"
-check_font "Meslo LG Nerd Font" "font-meslo-lg-nerd-font" "Required for Powerlevel10k icons in Ghostty and iTerm2."
+check_font "MesloLGS NF" "font-meslo-for-powerlevel10k" "Required for Powerlevel10k icons in Ghostty and iTerm2."
 
 step "Repo symlinks"
 check_symlink "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc"
