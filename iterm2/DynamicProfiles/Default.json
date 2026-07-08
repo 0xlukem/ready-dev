@@ -1,0 +1,17 @@
+{
+  "Profiles": [
+    {
+      "Name": "Dotfiles Default",
+      "Guid": "B5F1D855-8E51-4B33-8D7B-2AB7F6CF5A71",
+      "Dynamic Profile Parent Name": "Default",
+      "Normal Font": "JetBrainsMonoNerdFontMono-Regular 14",
+      "Non Ascii Font": "JetBrainsMonoNerdFontMono-Regular 14",
+      "Working Directory": "~",
+      "Custom Directory": "Yes",
+      "Use Custom Command": "No",
+      "Command": "",
+      "Initial Text": "",
+      "Unlimited Scrollback": true
+    }
+  ]
+}

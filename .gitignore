@@ -1,0 +1,43 @@
+# macOS
+.DS_Store
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.mobileprovision
+id_rsa
+id_ed25519
+credentials
+tokens
+secrets
+*.secret
+
+# SSH
+.ssh/
+ssh/
+
+# Local personal config
+config/personal.sh
+config/work.sh
+.envrc
+
+# Backups
+*.backup
+*.bak
+*.old
+*.orig
+*.tmp
+
+# Logs
+*.log
+
+# Node
+node_modules/
+
+# Python
+__pycache__/
+.venv/
+venv/

@@ -1,0 +1,19 @@
+# Baseline extensions for this public dotfiles setup.
+dbaeumer.vscode-eslint
+esbenp.prettier-vscode
+eamodio.gitlens
+github.vscode-github-actions
+github.vscode-pull-request-github
+ms-playwright.playwright
+ms-python.python
+ms-python.debugpy
+ms-python.vscode-pylance
+ms-python.vscode-python-envs
+bradlc.vscode-tailwindcss
+ms-vscode.live-server
+ms-vscode.vscode-typescript-next
+openai.chatgpt
+pkief.material-icon-theme
+pranaygp.vscode-css-peek
+ritwickdey.liveserver
+usernamehw.errorlens

@@ -1,0 +1,17 @@
+[init]
+  defaultBranch = main
+[pull]
+  rebase = false
+[core]
+  editor = code --wait
+  excludesfile = ~/.gitignore_global
+[include]
+  path = ~/.gitconfig.local
+[push]
+  autoSetupRemote = true
+[alias]
+  st = status
+  co = checkout
+  br = branch
+  cm = commit -m
+  lg = log --oneline --graph --decorate --all
