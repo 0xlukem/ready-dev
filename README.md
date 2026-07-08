@@ -14,6 +14,10 @@ stuck in hours of YouTube tutorials. It installs the common tools, configures
 the terminal and editor, asks before optional steps, and prints a final report
 of what was installed, linked, skipped, or backed up.
 
+If you need help, read this README all the way through first. It is written to
+be easy to follow. If you still feel lost, ask your LLM of choice to read
+`AGENTS.md` and explain this repo with the extra context it needs.
+
 ## Start Here
 
 If this is your first coding setup, start with a preview. It shows what the
